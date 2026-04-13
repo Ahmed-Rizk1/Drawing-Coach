@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Drawing Coach</title>
+  <meta name="description" content="Draw anything and get real-time coaching, tips, and a live step-by-step drawing guide."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Header ── -->
+  <header class="header">
+    <div class="logo">
+      <span class="logo-icon">🎨</span>
+      <span class="logo-text">Drawing Coach <span class="logo-ai"></span></span>
+    </div>
+    <div class="practice-bar">
+      <div class="practice-input-wrap">
+        <span class="practice-prefix">✏️ Draw:</span>
+        <input
+          type="text"
+          id="practice-input"
+          placeholder="face · cat · house · tree · car · star…"
+          autocomplete="off"
+        />
+      </div>
+      <button id="guide-me-btn" class="btn btn-guide">🎨 Guide Me</button>
+    </div>
+  </header>
+
+  <!-- ── Main 2-col grid ── -->
+  <main class="main-grid">
+
+    <!-- LEFT: Canvas + Toolbar -->
+    <section class="canvas-side">
+      <div class="canvas-card">
+
+        <div class="canvas-topbar">
+          <span class="canvas-title">Your Canvas</span>
+          <span class="canvas-status" id="canvas-status">Draw freely ✨</span>
+        </div>
+
+        <div class="canvas-wrapper">
+          <canvas id="drawing-canvas" width="600" height="450"></canvas>
+          <canvas id="guide-canvas"   width="600" height="450"></canvas>
+          <div id="step-label" class="step-label hidden"></div>
+          <div id="guide-controls" class="guide-controls hidden">
+            <button id="prev-step-btn" class="guide-nav-btn">←</button>
+            <span id="step-counter" class="step-counter">1 / 1</span>
+            <button id="next-step-btn" class="guide-nav-btn">→</button>
+            <button id="stop-guide-btn" class="guide-stop-btn">✕ Stop</button>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="tool-group">
+            <div class="tool-item">
+              <span class="tool-label">Color</span>
+              <input type="color" id="brush-color" value="#000000" class="color-picker"/>
+            </div>
+            <div class="tool-item">
+              <span class="tool-label">Size <span id="size-label" class="size-val">6</span></span>
+              <input type="range" id="brush-size" min="2" max="30" value="6" class="size-slider"/>
+            </div>
+          </div>
+          <div class="tool-group">
+            <button id="eraser-btn" class="btn btn-tool">🧹 Eraser</button>
+            <button id="clear-btn"  class="btn btn-tool btn-danger">🗑️ Clear</button>
+          </div>
+          <button id="analyze-btn" class="btn btn-analyze">
+            <span class="btn-spinner hidden" id="analyze-spinner"></span>
+            <span id="analyze-label">✦ Analyze Drawing</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: AI Insights Panel -->
+    <aside class="ai-panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Coach Insights</h2>
+      </div>
+      <div id="response-panel">
+        <div class="empty-state">
+          <div class="empty-art">🖌️</div>
+          <h3 class="empty-title">Start drawing!</h3>
+          <p class="empty-desc">
+            Draw anything on the canvas, then hit
+            <strong>Analyze Drawing</strong> for instant feedback and coaching.
+          </p>
+          <ul class="empty-hints">
+            <li>💡 Try drawing a face, cat, or house</li>
+            <li>🎯 Or type a subject above and click <strong>Guide Me</strong></li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+</div>
+
+<!-- ── Guide Mode Modal ── -->
+<div id="guide-modal" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-emoji">🎨</span>
+      <h2 class="modal-title">How do you want to practice?</h2>
+      <p id="modal-subject-label" class="modal-subject"></p>
+    </div>
+    <div class="modal-choices">
+      <button class="modal-choice fresh" id="choice-fresh">
+        <span class="choice-icon">✨</span>
+        <div class="choice-text">
+          <strong>Start From Scratch</strong>
+          <span>Canvas clears — follow the guide cleanly, no overlap</span>
+        </div>
+        <span class="choice-arrow">→</span>
+      </button>
+      <button class="modal-choice" id="choice-overlay">
+        <span class="choice-icon">🔄</span>
+        <div class="choice-text">
+          <strong>Keep My Drawing</strong>
+          <span>Guide overlays your sketch — compare and improve</span>
+        </div>
+        <span class="choice-arrow">→</span>
+      </button>
+    </div>
+    <button class="modal-cancel" id="modal-cancel">Cancel</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
