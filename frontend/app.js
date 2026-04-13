@@ -3,11 +3,11 @@
 // ─────────────────────────────────────────────────────
 
 // ─────────────────────────────────────────────────────────────────
-//  CONFIG — update RENDER_URL after deploying the backend to Render
+//  CONFIG — Backend URL
 // ─────────────────────────────────────────────────────────────────
-const RENDER_URL   = "https://drawing-coach-backend.onrender.com"; // ← update this
-const isLocal      = ["localhost", "127.0.0.1"].includes(window.location.hostname);
-const BACKEND_URL  = isLocal ? "http://localhost:8000" : RENDER_URL;
+const BACKEND_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:8000"
+  : "https://drawing-coach-backend.vercel.app";
 
 // ── DOM References ──
 const canvas         = document.getElementById("drawing-canvas");
