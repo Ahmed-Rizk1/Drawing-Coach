@@ -2,6 +2,8 @@
 
 A web app that analyzes your drawings, guesses what you drew, gives coaching tips, and shows you step-by-step how to draw anything with an animated live guide.
 
+🌐 **Live Demo:** [drawing-coach-94x1.vercel.app](https://drawing-coach-94x1.vercel.app/)
+
 ## ✨ Features
 - 🖌️ Free-form drawing canvas (color, size, eraser)
 - 🔍 Smart drawing analysis with tips
@@ -36,8 +38,8 @@ Drawing Coach AI/
 
 **1. Clone the repo**
 ```bash
-git clone https://github.com/YOUR_USERNAME/drawing-coach.git
-cd drawing-coach
+git clone https://github.com/Ahmed-Rizk1/Drawing-Coach.git
+cd Drawing-Coach
 ```
 
 **2. Create virtual environment and install deps**
