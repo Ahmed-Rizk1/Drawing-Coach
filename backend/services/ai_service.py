@@ -74,46 +74,61 @@ def extract_json(text: str) -> dict:
         "tips": ["Try drawing with more contrast", "Keep practicing!"],
     }
 
-
 def analyze_drawing(image_b64: str) -> dict:
     """
     Sends the compressed drawing to Groq's vision model.
     Returns a dict with description, guess, and tips.
+
+    :param image_b64: Base64-encoded image data
+    :return: A dictionary containing the result
     """
-    # Strip "data:image/...;base64," prefix if present
-    if "," in image_b64:
-        image_b64 = image_b64.split(",")[1]
 
-    # ── Compress before sending ──
-    compressed = compress_image(image_b64)
+    # Input validation to ensure valid base64-encoded string
+    if not base64.b64encode(base64_b64decode(image_b64)).decode('utf-8') == image_b64:
+        raise ValueError("Invalid base64-encoded string")
 
-    response = client.chat.completions.create(
-        model=VISION_MODEL,
-        messages=[
-            {
-                "role": "system",
-                "content": SYSTEM_PROMPT,
-            },
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpeg;base64,{compressed}"
+    try:
+        if "," in image_b64:
+            image_b64 = image_b64.split(",")[1]
+        compressed = compress_image(image_b64)
+
+        response = client.chat.completions.create(
+            model=VISION_MODEL,
+            messages=[
+                {
+                    "role": "system",
+                    "content": SYSTEM_PROMPT,
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{compressed}"
+                            },
                         },
-                    },
-                    {
-                        "type": "text",
-                        "text": "Analyze this drawing and give coaching feedback.",
-                    },
-                ],
-            },
-        ],
-        max_tokens=512,
-        temperature=0.7,
-        # NOTE: response_format removed — not supported for vision on all models
-    )
+                        {
+                            "type": "text",
+                            "text": "Analyze this drawing and give coaching feedback.",
+                        },
+                    ],
+                },
+            ],
+            max_tokens=512,
+            temperature=0.7,
+            # NOTE: response_format removed — not supported for vision on all models
+        )
 
-    content = response.choices[0].message.content
-    return extract_json(content)
+        content = response.choices[0].message.content
+        return extract_json(content)
+    except Exception as e:
+        # Log and handle unexpected exceptions
+        print(f"An unexpected error occurred: {e}")
+        return {
+            "description": "An error occurred while analyzing the drawing.",
+            "guess": "Error",
+            "tips": ["There was a problem communicating with the AI service.", "Please check your network and try again."]
+        }
+
+
