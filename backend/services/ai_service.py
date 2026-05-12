@@ -78,13 +78,18 @@ def analyze_drawing(image_b64: str) -> dict:
     """
     Sends the compressed drawing to Groq's vision model.
     Returns a dict with description, guess, and tips.
+
+    :param image_b64: Base64-encoded image data
+    :return: A dictionary containing the result
     """
+
+    # Input validation to ensure valid base64-encoded string
+    if not base64.b64encode(base64_b64decode(image_b64)).decode('utf-8') == image_b64:
+        raise ValueError("Invalid base64-encoded string")
+
     try:
-        # Strip "data:image/...;base64," prefix if present
         if "," in image_b64:
             image_b64 = image_b64.split(",")[1]
-
-        # ── Compress before sending ──
         compressed = compress_image(image_b64)
 
         response = client.chat.completions.create(
@@ -118,7 +123,8 @@ def analyze_drawing(image_b64: str) -> dict:
         content = response.choices[0].message.content
         return extract_json(content)
     except Exception as e:
-        print(f"Error analyzing drawing with Groq API: {e}")
+        # Log and handle unexpected exceptions
+        print(f"An unexpected error occurred: {e}")
         return {
             "description": "An error occurred while analyzing the drawing.",
             "guess": "Error",
