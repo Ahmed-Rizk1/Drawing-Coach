@@ -80,40 +80,48 @@ def analyze_drawing(image_b64: str) -> dict:
     Sends the compressed drawing to Groq's vision model.
     Returns a dict with description, guess, and tips.
     """
-    # Strip "data:image/...;base64," prefix if present
-    if "," in image_b64:
-        image_b64 = image_b64.split(",")[1]
+    try:
+        # Strip "data:image/...;base64," prefix if present
+        if "," in image_b64:
+            image_b64 = image_b64.split(",")[1]
 
-    # ── Compress before sending ──
-    compressed = compress_image(image_b64)
+        # ── Compress before sending ──
+        compressed = compress_image(image_b64)
 
-    response = client.chat.completions.create(
-        model=VISION_MODEL,
-        messages=[
-            {
-                "role": "system",
-                "content": SYSTEM_PROMPT,
-            },
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpeg;base64,{compressed}"
+        response = client.chat.completions.create(
+            model=VISION_MODEL,
+            messages=[
+                {
+                    "role": "system",
+                    "content": SYSTEM_PROMPT,
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{compressed}"
+                            },
                         },
-                    },
-                    {
-                        "type": "text",
-                        "text": "Analyze this drawing and give coaching feedback.",
-                    },
-                ],
-            },
-        ],
-        max_tokens=512,
-        temperature=0.7,
-        # NOTE: response_format removed — not supported for vision on all models
-    )
+                        {
+                            "type": "text",
+                            "text": "Analyze this drawing and give coaching feedback.",
+                        },
+                    ],
+                },
+            ],
+            max_tokens=512,
+            temperature=0.7,
+            # NOTE: response_format removed — not supported for vision on all models
+        )
 
-    content = response.choices[0].message.content
-    return extract_json(content)
+        content = response.choices[0].message.content
+        return extract_json(content)
+    except Exception as e:
+        print(f"Error analyzing drawing with Groq API: {e}")
+        return {
+            "description": "An error occurred while analyzing the drawing.",
+            "guess": "Error",
+            "tips": ["There was a problem communicating with the AI service.", "Please check your network and try again."]
+        }
